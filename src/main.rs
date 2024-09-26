@@ -1,5 +1,6 @@
 use nvml_wrapper::error::NvmlError;
 use nvml_wrapper::Nvml;
+use sysinfo::Disks;
 use std::thread;
 use std::time::Duration;
 use sysinfo::Process;
@@ -13,6 +14,7 @@ fn main() {
     display_network_info();
     display_gpu_stats().unwrap();
     display_top_cpu_processes(&sys);
+    display_disk_usage();
 }
 
 fn display_system_info(sys: &System) {
@@ -149,5 +151,21 @@ fn display_top_cpu_processes(sys: &System) {
         let name = process.name();
         let cpu_usage = process.cpu_usage();
         println!("{:?}: {:.2}%", name, cpu_usage);
+    }
+}
+
+fn display_disk_usage() {
+    let disks = Disks::new_with_refreshed_list();
+    for disk in &disks {
+        let name = disk.name().to_str().unwrap_or("Unknown disk");
+        let total_space = disk.total_space(); // Total space in bytes
+        let available_space = disk.available_space(); // Available space in bytes
+
+        println!(
+            "Disk: {}\nTotal Space: {:.2} GB\nAvailable Space: {:.2} GB\n",
+            name,
+            total_space as f64 / 1_073_741_824.0,  // Convert bytes to GB
+            available_space as f64 / 1_073_741_824.0  // Convert bytes to GB
+        );
     }
 }
