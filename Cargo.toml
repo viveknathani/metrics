@@ -1,0 +1,8 @@
+[package]
+name = "metrics"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nvml-wrapper = "0.10.0"
+sysinfo = "0.31.4"
